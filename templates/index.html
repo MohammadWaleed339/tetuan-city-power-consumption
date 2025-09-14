@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Power Consumption Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f3f6fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 450px;
+            margin: 60px auto;
+            background: #fff;
+            padding: 25px 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+            color: #444;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 8px 10px;
+            margin-bottom: 18px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #0077cc;
+            box-shadow: 0 0 5px rgba(0, 119, 204, 0.3);
+        }
+
+        button {
+            width: 100%;
+            background: #0077cc;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #005fa3;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 12px;
+            text-align: center;
+            background: #e9f5ff;
+            border: 1px solid #b6e0fe;
+            border-radius: 8px;
+            font-size: 16px;
+            color: #004080;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Power Consumption Predictor</h2>
+        <form action="/predict" method="post">
+            
+            <label>Temperature (°C)</label>
+            <input type="number" step="0.001" name="temperature" placeholder="e.g. 0 - 40" min="-10" max="50" required>
+
+            <label>Humidity (%)</label>
+            <input type="number" step="0.001" name="humidity" placeholder="0 - 100" min="0" max="100" required>
+
+            <label>Wind Speed (m/s)</label>
+            <input type="number" step="0.001" name="windspeed" placeholder="e.g. 0 - 15" min="0" max="25" required>
+
+            <label>General Diffuse Flows (W/m²)</label>
+            <input type="number" step="0.001" name="gdf" placeholder="e.g. 0 - 1200" min="0" max="1200" required>
+
+            <label>Diffuse Flows (W/m²)</label>
+            <input type="number" step="0.001" name="df" placeholder="e.g. 0 - 1000" min="0" max="1000" required>
+
+            <label>Day of Month</label>
+            <input type="number" name="day" placeholder="1 - 31" min="1" max="31" required>
+
+            <label>Month</label>
+            <input type="number" name="month" placeholder="1 - 12" min="1" max="12" required>
+
+            <label>Time (minutes of day)</label>
+            <input type="number" name="time_in_min" placeholder="0 - 1440" min="0" max="1440" required>
+
+            <label>Zone</label>
+            <select name="zone" required>
+                <option value="1">Zone 1</option>
+                <option value="2">Zone 2</option>
+                <option value="3">Zone 3</option>
+            </select>
+
+            <button type="submit">Predict</button>
+        </form>
+
+        {% if prediction_text %}
+        <div class="result">
+            {{ prediction_text }}
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
