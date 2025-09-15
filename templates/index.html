@@ -1,209 +1,16 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Power Consumption Prediction</title>
-    <style>
-        .form-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr; /* two equal columns */
-        gap: 20px 40px; /* row gap, column gap */
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-         .value-label {
-        margin-top: 5px;
-        font-size: 13px;
-        color: #333;
-        }
-
-        input[type=range] {
-            width: 100%;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            background: #f3f6fa;
-            margin: 0;
-            padding: 0;
-        }
-
-        .container {
-            width: 500px;
-            margin: 60px auto;
-            background: #fff;
-            padding: 25px 30px;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        h2 {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #333;
-        }
-
-        label {
-            font-weight: bold;
-            margin-bottom: 5px;
-            display: block;
-            color: #444;
-        }
-
-        input[type=range] {
-            width: 100%;
-            margin-bottom: 10px;
-        }
-
-        .value-label {
-            font-size: 14px;
-            margin-bottom: 18px;
-            color: #0077cc;
-            font-weight: bold;
-            text-align: right;
-        }
-
-        select {
-            width: 100%;
-            padding: 8px 10px;
-            margin-bottom: 18px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            box-sizing: border-box;
-            font-size: 14px;
-        }
-
-        select:focus {
-            outline: none;
-            border-color: #0077cc;
-            box-shadow: 0 0 5px rgba(0, 119, 204, 0.3);
-        }
-
-        button {
-            width: 100%;
-            background: #0077cc;
-            color: white;
-            padding: 10px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        button:hover {
-            background: #005fa3;
-        }
-
-        .result {
-            margin-top: 20px;
-            padding: 12px;
-            text-align: center;
-            background: #e9f5ff;
-            border: 1px solid #b6e0fe;
-            border-radius: 8px;
-            font-size: 16px;
-            color: #004080;
-            font-weight: bold;
-        }
-    </style>
-</head>
-<body>
-
-    
-    <div class="container">
-    <h2>Power Consumption Predictor</h2>
-    <form action="/predict" method="post">
-        
-        <label>Temperature (°C)</label>
-    <input type="range" name="temperature" min="-10" max="50" step="0.1"
-        value="{{ request.form.temperature if request.form.temperature else 0 }}"
-        oninput="tempValue.textContent=this.value">
-    <div class="value-label">Value: <span id="tempValue">{{ request.form.temperature if request.form.temperature else 0 }}</span></div>
-
-    <label>Humidity (%)</label>
-    <input type="range" name="humidity" min="0" max="100" step="0.1"
-        value="{{ request.form.humidity if request.form.humidity else 0 }}"
-        oninput="humValue.textContent=this.value">
-    <div class="value-label">Value: <span id="humValue">{{ request.form.humidity if request.form.humidity else 0 }}</span></div>
-
-    <label>Wind Speed (m/s)</label>
-    <input type="range" name="windspeed" min="0" max="25" step="0.1"
-        value="{{ request.form.windspeed if request.form.windspeed else 0 }}"
-        oninput="windValue.textContent=this.value">
-    <div class="value-label">Value: <span id="windValue">{{ request.form.windspeed if request.form.windspeed else 0 }}</span></div>
-
-    <label>General Diffuse Flows (W/m²)</label>
-    <input type="range" name="gdf" min="0" max="1200" step="1"
-        value="{{ request.form.gdf if request.form.gdf else 0 }}"
-        oninput="gdfValue.textContent=this.value">
-    <div class="value-label">Value: <span id="gdfValue">{{ request.form.gdf if request.form.gdf else 0 }}</span></div>
-
-    <label>Diffuse Flows (W/m²)</label>
-    <input type="range" name="df" min="0" max="1000" step="1"
-        value="{{ request.form.df if request.form.df else 0 }}"
-        oninput="dfValue.textContent=this.value">
-    <div class="value-label">Value: <span id="dfValue">{{ request.form.df if request.form.df else 0 }}</span></div>
-
-    <label>Day of Month</label>
-    <input type="range" name="day" min="1" max="31"
-        value="{{ request.form.day if request.form.day else 1 }}"
-        oninput="dayValue.textContent=this.value">
-    <div class="value-label">Value: <span id="dayValue">{{ request.form.day if request.form.day else 1 }}</span></div>
-
-    <label>Month</label>
-    <input type="range" name="month" min="1" max="12"
-        value="{{ request.form.month if request.form.month else 1 }}"
-        oninput="monthValue.textContent=this.value">
-    <div class="value-label">Value: <span id="monthValue">{{ request.form.month if request.form.month else 1 }}</span></div>
-
-    <label>Time (minutes of day)</label>
-    <input type="range" name="time_in_min" min="0" max="1440" step="1"
-        value="{{ request.form.time_in_min if request.form.time_in_min else 0 }}"
-        oninput="timeValue.textContent=this.value">
-    <div class="value-label">Value: <span id="timeValue">{{ request.form.time_in_min if request.form.time_in_min else 0 }}</span></div>
-
-    <label>Zone</label>
-    <select name="zone" required>
-        <option value="1" {% if request.form.zone == '1' %}selected{% endif %}>Zone 1</option>
-        <option value="2" {% if request.form.zone == '2' %}selected{% endif %}>Zone 2</option>
-        <option value="3" {% if request.form.zone == '3' %}selected{% endif %}>Zone 3</option>
-    </select>
-
-
-    #<button type="submit">Predict</button>
-    </form>
-
-    {% if prediction_text %}
-    <div class="result">
-        {{ prediction_text }}
-    </div>
-    {% endif %}
-</div>
-</body>
-</html>
-
- -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Power Consumption Prediction</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background: url('city-skyline-night.jpg') no-repeat center center fixed;
-            background-size: cover;
-            position: relative;
-            color: #000000;
+    body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        background: url("{{url_for('static', filename='city-skyline-night.jpg')}}") no-repeat center center fixed;
+        background-size: cover;
+        color: #000000;
         }
 
         /* Electric fence overlay */
@@ -223,7 +30,7 @@
             background: rgba(0,0,0,0.7);
             padding: 25px 30px;
             border-radius: 12px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0);
             position: relative;
             z-index: 2;
         }
