@@ -1,9 +1,30 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Power Consumption Prediction</title>
     <style>
+        .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* two equal columns */
+        gap: 20px 40px; /* row gap, column gap */
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+         .value-label {
+        margin-top: 5px;
+        font-size: 13px;
+        color: #333;
+        }
+
+        input[type=range] {
+            width: 100%;
+        }
+
         body {
             font-family: Arial, sans-serif;
             background: #f3f6fa;
@@ -12,7 +33,7 @@
         }
 
         .container {
-            width: 450px;
+            width: 500px;
             margin: 60px auto;
             background: #fff;
             padding: 25px 30px;
@@ -33,7 +54,20 @@
             color: #444;
         }
 
-        input, select {
+        input[type=range] {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .value-label {
+            font-size: 14px;
+            margin-bottom: 18px;
+            color: #0077cc;
+            font-weight: bold;
+            text-align: right;
+        }
+
+        select {
             width: 100%;
             padding: 8px 10px;
             margin-bottom: 18px;
@@ -43,7 +77,7 @@
             font-size: 14px;
         }
 
-        input:focus, select:focus {
+        select:focus {
             outline: none;
             border-color: #0077cc;
             box-shadow: 0 0 5px rgba(0, 119, 204, 0.3);
@@ -80,49 +114,308 @@
     </style>
 </head>
 <body>
+
+    
+    <div class="container">
+    <h2>Power Consumption Predictor</h2>
+    <form action="/predict" method="post">
+        
+        <label>Temperature (°C)</label>
+    <input type="range" name="temperature" min="-10" max="50" step="0.1"
+        value="{{ request.form.temperature if request.form.temperature else 0 }}"
+        oninput="tempValue.textContent=this.value">
+    <div class="value-label">Value: <span id="tempValue">{{ request.form.temperature if request.form.temperature else 0 }}</span></div>
+
+    <label>Humidity (%)</label>
+    <input type="range" name="humidity" min="0" max="100" step="0.1"
+        value="{{ request.form.humidity if request.form.humidity else 0 }}"
+        oninput="humValue.textContent=this.value">
+    <div class="value-label">Value: <span id="humValue">{{ request.form.humidity if request.form.humidity else 0 }}</span></div>
+
+    <label>Wind Speed (m/s)</label>
+    <input type="range" name="windspeed" min="0" max="25" step="0.1"
+        value="{{ request.form.windspeed if request.form.windspeed else 0 }}"
+        oninput="windValue.textContent=this.value">
+    <div class="value-label">Value: <span id="windValue">{{ request.form.windspeed if request.form.windspeed else 0 }}</span></div>
+
+    <label>General Diffuse Flows (W/m²)</label>
+    <input type="range" name="gdf" min="0" max="1200" step="1"
+        value="{{ request.form.gdf if request.form.gdf else 0 }}"
+        oninput="gdfValue.textContent=this.value">
+    <div class="value-label">Value: <span id="gdfValue">{{ request.form.gdf if request.form.gdf else 0 }}</span></div>
+
+    <label>Diffuse Flows (W/m²)</label>
+    <input type="range" name="df" min="0" max="1000" step="1"
+        value="{{ request.form.df if request.form.df else 0 }}"
+        oninput="dfValue.textContent=this.value">
+    <div class="value-label">Value: <span id="dfValue">{{ request.form.df if request.form.df else 0 }}</span></div>
+
+    <label>Day of Month</label>
+    <input type="range" name="day" min="1" max="31"
+        value="{{ request.form.day if request.form.day else 1 }}"
+        oninput="dayValue.textContent=this.value">
+    <div class="value-label">Value: <span id="dayValue">{{ request.form.day if request.form.day else 1 }}</span></div>
+
+    <label>Month</label>
+    <input type="range" name="month" min="1" max="12"
+        value="{{ request.form.month if request.form.month else 1 }}"
+        oninput="monthValue.textContent=this.value">
+    <div class="value-label">Value: <span id="monthValue">{{ request.form.month if request.form.month else 1 }}</span></div>
+
+    <label>Time (minutes of day)</label>
+    <input type="range" name="time_in_min" min="0" max="1440" step="1"
+        value="{{ request.form.time_in_min if request.form.time_in_min else 0 }}"
+        oninput="timeValue.textContent=this.value">
+    <div class="value-label">Value: <span id="timeValue">{{ request.form.time_in_min if request.form.time_in_min else 0 }}</span></div>
+
+    <label>Zone</label>
+    <select name="zone" required>
+        <option value="1" {% if request.form.zone == '1' %}selected{% endif %}>Zone 1</option>
+        <option value="2" {% if request.form.zone == '2' %}selected{% endif %}>Zone 2</option>
+        <option value="3" {% if request.form.zone == '3' %}selected{% endif %}>Zone 3</option>
+    </select>
+
+
+    #<button type="submit">Predict</button>
+    </form>
+
+    {% if prediction_text %}
+    <div class="result">
+        {{ prediction_text }}
+    </div>
+    {% endif %}
+</div>
+</body>
+</html>
+
+ -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Power Consumption Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: url('city-skyline-night.jpg') no-repeat center center fixed;
+            background-size: cover;
+            position: relative;
+            color: #000000;
+        }
+
+        /* Electric fence overlay */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: url('electric-fence.png') repeat-x bottom;
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .container {
+            width: 650px;
+            margin: 60px auto;
+            background: rgba(0,0,0,0.7);
+            padding: 25px 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 2;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px 40px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #f0f0f0;
+        }
+
+        input[type=range] {
+            width: 100%;
+            cursor: pointer;
+        }
+
+        .value-label {
+            font-size: 20px;
+            margin-top: 5px;
+            color: #00b7ff;
+            font-weight: bold;
+            text-align: right;
+        }
+
+        select {
+            width: 100%;
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 14px;
+            border: none;
+        }
+
+        button {
+            width: 100%;
+            background: linear-gradient(45deg, #0077cc, #00d4ff);
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.3s;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            background: linear-gradient(45deg, #ff6b6b, #ffcc00);
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            text-align: center;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            transition: all 0.5s ease;
+        }
+
+        /* Glow animations */
+        .safe {
+            background: rgba(0,255,0,0.2);
+            border: 2px solid #00ff00;
+            box-shadow: 0 0 15px #00ff00;
+            color: #0f0;
+        }
+        .danger {
+            background: rgba(255,0,0,0.2);
+            border: 2px solid #ff0000;
+            box-shadow: 0 0 25px #ff0000;
+            color: #ff4444;
+        }
+
+        /* Fire animation */
+        @keyframes fire {
+            0% { text-shadow: 0 0 5px #ff0, 0 0 10px #f00; }
+            50% { text-shadow: 0 0 20px #ff4500, 0 0 30px #ff0; }
+            100% { text-shadow: 0 0 10px #f00, 0 0 25px #ff6347; }
+        }
+        .fire {
+            animation: fire 1s infinite alternate;
+            color: #ff4500 !important;
+        }
+    </style>
+</head>
+<body>
     <div class="container">
         <h2>Power Consumption Predictor</h2>
         <form action="/predict" method="post">
-            
-            <label>Temperature (°C)</label>
-            <input type="number" step="0.001" name="temperature" placeholder="e.g. 0 - 40" min="-10" max="50" required>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Temperature (°C)</label>
+                    <input type="range" name="temperature" min="-10" max="50" step="0.1"
+                        value="{{ request.form.temperature if request.form.temperature else 0 }}"
+                        oninput="tempValue.textContent=this.value">
+                    <div class="value-label"> <span id="tempValue">{{ request.form.temperature if request.form.temperature else 0 }}</span></div>
+                </div>
 
-            <label>Humidity (%)</label>
-            <input type="number" step="0.001" name="humidity" placeholder="0 - 100" min="0" max="100" required>
+                <div class="form-group">
+                    <label>Humidity (%)</label>
+                    <input type="range" name="humidity" min="0" max="100" step="0.1"
+                        value="{{ request.form.humidity if request.form.humidity else 0 }}"
+                        oninput="humValue.textContent=this.value">
+                    <div class="value-label"> <span id="humValue">{{ request.form.humidity if request.form.humidity else 0 }}</span></div>
+                </div>
 
-            <label>Wind Speed (m/s)</label>
-            <input type="number" step="0.001" name="windspeed" placeholder="e.g. 0 - 15" min="0" max="25" required>
+                <div class="form-group">
+                    <label>Wind Speed (m/s)</label>
+                    <input type="range" name="windspeed" min="0" max="25" step="0.1"
+                        value="{{ request.form.windspeed if request.form.windspeed else 0 }}"
+                        oninput="windValue.textContent=this.value">
+                    <div class="value-label"> <span id="windValue">{{ request.form.windspeed if request.form.windspeed else 0 }}</span></div>
+                </div>
 
-            <label>General Diffuse Flows (W/m²)</label>
-            <input type="number" step="0.001" name="gdf" placeholder="e.g. 0 - 1200" min="0" max="1200" required>
+                <div class="form-group">
+                    <label>General Diffuse Flows (W/m²)</label>
+                    <input type="range" name="gdf" min="0" max="1200" step="1"
+                        value="{{ request.form.gdf if request.form.gdf else 0 }}"
+                        oninput="gdfValue.textContent=this.value">
+                    <div class="value-label"> <span id="gdfValue">{{ request.form.gdf if request.form.gdf else 0 }}</span></div>
+                </div>
 
-            <label>Diffuse Flows (W/m²)</label>
-            <input type="number" step="0.001" name="df" placeholder="e.g. 0 - 1000" min="0" max="1000" required>
+                <div class="form-group">
+                    <label>Diffuse Flows (W/m²)</label>
+                    <input type="range" name="df" min="0" max="1000" step="1"
+                        value="{{ request.form.df if request.form.df else 0 }}"
+                        oninput="dfValue.textContent=this.value">
+                    <div class="value-label"> <span id="dfValue">{{ request.form.df if request.form.df else 0 }}</span></div>
+                </div>
 
-            <label>Day of Month</label>
-            <input type="number" name="day" placeholder="1 - 31" min="1" max="31" required>
+                <div class="form-group">
+                    <label>Day of Month</label>
+                    <input type="range" name="day" min="1" max="31"
+                        value="{{ request.form.day if request.form.day else 1 }}"
+                        oninput="dayValue.textContent=this.value">
+                    <div class="value-label"> <span id="dayValue">{{ request.form.day if request.form.day else 1 }}</span></div>
+                </div>
 
-            <label>Month</label>
-            <input type="number" name="month" placeholder="1 - 12" min="1" max="12" required>
+                <div class="form-group">
+                    <label>Month</label>
+                    <input type="range" name="month" min="1" max="12"
+                        value="{{ request.form.month if request.form.month else 1 }}"
+                        oninput="monthValue.textContent=this.value">
+                    <div class="value-label"> <span id="monthValue">{{ request.form.month if request.form.month else 1 }}</span></div>
+                </div>
 
-            <label>Time (minutes of day)</label>
-            <input type="number" name="time_in_min" placeholder="0 - 1440" min="0" max="1440" required>
+                <div class="form-group">
+                    <label>Time (minutes of day)</label>
+                    <input type="range" name="time_in_min" min="0" max="1440" step="1"
+                        value="{{ request.form.time_in_min if request.form.time_in_min else 0 }}"
+                        oninput="timeValue.textContent=this.value">
+                    <div class="value-label"> <span id="timeValue">{{ request.form.time_in_min if request.form.time_in_min else 0 }}</span></div>
+                </div>
+            </div>
 
             <label>Zone</label>
             <select name="zone" required>
-                <option value="1">Zone 1</option>
-                <option value="2">Zone 2</option>
-                <option value="3">Zone 3</option>
+                <option value="1" {% if request.form.zone == '1' %}selected{% endif %}>Zone 1</option>
+                <option value="2" {% if request.form.zone == '2' %}selected{% endif %}>Zone 2</option>
+                <option value="3" {% if request.form.zone == '3' %}selected{% endif %}>Zone 3</option>
             </select>
 
-            <button type="submit">Predict</button>
+            <button type="submit">⚡ Predict ⚡</button>
         </form>
 
         {% if prediction_text %}
-        <div class="result">
+        <div class="result {% if prediction_text|int > 40000 %}danger fire{% else %}safe{% endif %}">
             {{ prediction_text }}
         </div>
         {% endif %}
     </div>
 </body>
 </html>
+
+
+
+
+
