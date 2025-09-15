@@ -1,0 +1,59 @@
+# 💡 Tetuan City Power Consumption Prediction ✨
+
+## 📜 Description
+This project aims to predict power consumption in Tetuan city, focusing on three distinct zones.
+
+## 📊 Data Source
+*   Dataset: [Tetuan City power consumption dataset](https://raw.githubusercontent.com/MohammadWaleed339/internship_collab_file/refs/heads/main/Labmentix_internship_project/datasets/TetuanCitypowerconsumption.csv)
+
+## 🛠️ Methodology
+
+*   **Data Loading and Preprocessing**:
+    *   Loaded data from the provided CSV file.
+    *   Converted 'DateTime' column to datetime objects.
+    *   Extracted 'Date' and 'Time' into separate columns.
+    *   Extracted 'Day', 'Month', and 'Year' from the 'Date' column.
+    *   Dropped the original 'DateTime' column.
+    *   Converted 'Time' to 'Time(in min)' (float representing hours and minutes).
+    *   Dropped 'Date', 'Year', and 'Time' columns for modeling.
+
+*   **Exploratory Data Analysis (EDA)**:
+    *   Plotted average values of features ('Temperature', 'Humidity', 'Wind Speed', 'general diffuse flows', 'diffuse flows') for each month.
+    *   Visualized power consumption in all three zones with respect to month and time (in minutes).
+    *   Generated a correlation heatmap to understand relationships between features and power consumption.
+
+*   **Model Selection**:
+    *   Evaluated various regression algorithms: Linear Regression, Decision Tree, Random Forest, XGBoost, CatBoost, Polynomial Regression, Gradient Boosting, LightGBM, SVR, K-Nearest Neighbors, Ridge, Lasso, Elastic Net, Bayesian Ridge, and Neural Network.
+    *   Used metrics such as MAE, MSE, MSLE, R-squared, Explained Variance, and Mean Gamma Deviance for evaluation.
+    *   Considered training time as a factor in model selection.
+
+*   **Hyperparameter Tuning**:
+    *   Defined tuned parameters for selected models (Decision Tree, XGBoost, Polynomial Regression, Gradient Boosting, LightGBM, KNN).
+    *   Applied tuning to improve model performance and reduce overfitting.
+
+*   **Model Training and Evaluation**:
+    *   Split data into training and testing sets (80/20 split).
+    *   Trained the selected models on the training data.
+    *   Evaluated the models on the testing data using the defined metrics.
+    *   Performed cross-validation (5 splits) on a subset of models.
+    *   Checked for overfitting by comparing R-squared on training and testing sets.
+
+*   **Dimensionality Reduction (PCA)**:
+    *   Applied PCA with 2 components to the scaled data.
+    *   Trained a Random Forest model on the PCA transformed data to assess the impact on training time and accuracy.
+
+## 📈 Results
+
+*   Decision Tree Regressor was selected as the best model based on the evaluation, balancing accuracy and efficiency.
+*   The optimized Decision Tree model achieved:
+    *   R-squared > 93% for Zone 1.
+    *   R-squared > 96% for Zone 2.
+    *   R-squared > 89% for Zone 3.
+*   PCA significantly reduced training time but resulted in a significant drop in accuracy, indicating it was not suitable for this problem with the chosen number of components.
+
+## ▶️ How to Run
+
+1.  Clone the repository to your local machine.
+2.  Open the `tetuan-city-power-consumption.ipynb` notebook in Google Colab or a compatible environment.
+3.  Run all the code cells sequentially.
+4.  The results and plots will be generated within the notebook.
